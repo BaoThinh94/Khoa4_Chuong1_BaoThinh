@@ -3,7 +3,7 @@ import { call, delay, fork, take, takeEvery, takeLatest, put, select } from 'red
 import { CyberbugService, cyberbugService } from '../../services/CyberbugService'
 import { todoList } from '../../services/ToDoListService'
 import { STATUS_CODE, TOKEN, USER_LOG } from '../../util/constants/settingSystem'
-import { ADD_LIST_ALL_PROJECT, CREATE_NEWPROJECT_AUTHORIZE, DEL_PROJECT, GET_ALLPROJECT, GET_LIST_ALL_PROJECT, GET_PROJECT_CATEGORY, SET_PROJECT_CATEGORY, USER_LOGIN_CYBERBUG } from '../constants/CyberBugConst'
+import { ADD_LIST_ALL_PROJECT, CREATE_NEWPROJECT_AUTHORIZE, DEL_PROJECT, GET_ALLPROJECT, GET_LIST_ALL_PROJECT, GET_PROJECT_CATEGORY, SET_PROJECT_CATEGORY, UPDATE_PROJECT, USER_LOGIN_CYBERBUG } from '../constants/CyberBugConst'
 import { DISPLAY_LOADING, HIDE_LOADING } from '../constants/LoadingConst'
 import { useSelector, useDispatch } from 'react-redux';
 import HistoryReducer from '../reducers/HistoryReducer'
@@ -95,7 +95,7 @@ export function* trackingCreateProjectAuthorizeSaga() {
 
 function* getAllProjectSaga() {
 
-    
+
     yield put({
         type: DISPLAY_LOADING
     })
@@ -104,18 +104,18 @@ function* getAllProjectSaga() {
         let { data, status } = yield call(cyberbugService.getAllProject)
         if (status == STATUS_CODE.SUCCESS) {
             // let user = yield select(state => state.InfoUserLogInReducer.useLogin)
-            
-            
+
+
             // for (let item in data.content){
             //     if (data.content[item].creator.id == user.id){
             //         listProject.push(data.content[item])
             //     }
             // }
-            yield put ({
+            yield put({
                 type: ADD_LIST_ALL_PROJECT,
-                listProject:data.content
+                listProject: data.content
             })
-            
+
         }
     } catch (err) {
         console.log(err)
@@ -140,15 +140,13 @@ function* deleteProject(action) {
     })
 
     try {
-        let { data, status } = yield call( () => {return cyberbugService.deleteProject(action.projectID)})
-        console.log(data)
-        console.log(status)
+        let { data, status } = yield call(() => { return cyberbugService.deleteProject(action.projectID) })
         if (status == STATUS_CODE.SUCCESS) {
-           
-            yield put ({
-                type:GET_ALLPROJECT
+
+            yield put({
+                type: GET_ALLPROJECT
             })
-            
+
         }
     } catch (err) {
         console.log(err)
@@ -162,4 +160,38 @@ function* deleteProject(action) {
 
 export function* trackingDeleteProjectSaga() {
     yield takeLatest(DEL_PROJECT, deleteProject)
+}
+
+function* updateProject(action) {
+
+    let { projectID, projectValue } = action;
+    console.log('id', projectID);
+    console.log('obj', projectValue);
+
+    yield put({
+        type: DISPLAY_LOADING
+    })
+
+    try {
+        let { data, status } = yield call(() => { return cyberbugService.updateProject(projectID, projectValue) })
+        console.log(data)
+        console.log(status)
+        if (status == STATUS_CODE.SUCCESS) {
+            yield delay(500)
+            yield put({
+                type: GET_ALLPROJECT
+            })
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+    yield put({
+        type: HIDE_LOADING
+    })
+
+}
+
+export function* trackingUpdateProjectSaga() {
+    yield takeLatest(UPDATE_PROJECT, updateProject)
 }

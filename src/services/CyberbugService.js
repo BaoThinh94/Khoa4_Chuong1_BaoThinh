@@ -46,6 +46,15 @@ export class CyberbugService {
             headers:{'Authorization': 'Bearer ' + localStorage.getItem(TOKEN)}
         })
     }
+
+    updateProject = (projectID, projectValue) => {
+        return Axios({
+            url: `${DOMAIN_JIRA}/Project/updateProject?projectId=${projectID}`,
+            method:'PUT',
+            data:projectValue,
+            headers:{'Authorization': 'Bearer ' + localStorage.getItem(TOKEN)}
+        })
+    }
 }
 
 

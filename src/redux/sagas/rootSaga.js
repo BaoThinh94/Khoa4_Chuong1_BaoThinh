@@ -22,6 +22,7 @@ export function* rootSaga() {
     CyberBugSaga.trackingCreateProjectAuthorizeSaga(),
     CyberBugSaga.trackingGetAllProjectSaga(),
     CyberBugSaga.trackingDeleteProjectSaga(),
+    CyberBugSaga.trackingUpdateProjectSaga(),
   ])
 
 

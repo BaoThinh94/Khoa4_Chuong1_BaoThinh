@@ -5,7 +5,7 @@ import { withFormik } from 'formik';
 import { Input } from 'antd';
 import { Editor } from '@tinymce/tinymce-react';
 import { ProjectCategoryReducer } from '../../redux/reducers/ProjectCategoryReducer';
-import { CREATE_NEWPROJECT_AUTHORIZE } from '../../redux/constants/CyberBugConst';
+import { CREATE_NEWPROJECT_AUTHORIZE, UPDATE_PROJECT } from '../../redux/constants/CyberBugConst';
 import * as Yup from 'yup';
 import { ProjectManagermentEditReducer } from '../../redux/reducers/ProjectManagermentEditReducer'
 
@@ -24,8 +24,6 @@ function ModalProjectManager(props) {
         content,
         projectEdit
     } = props;
-
-    console.log(projectEdit)
 
     const renderProJectCatelogry = () => {
         return content.map((item, index) => {
@@ -53,7 +51,7 @@ function ModalProjectManager(props) {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">
-                                    Project ID: {projectEdit.id}
+                                    Project ID: {values.id}
                                 </h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
@@ -69,7 +67,7 @@ function ModalProjectManager(props) {
                                                 type="text"
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
-                                                value={projectEdit.projectName}
+                                                value={values.projectName}
                                                 name="projectName"
                                             />
                                         </div>
@@ -79,7 +77,7 @@ function ModalProjectManager(props) {
                                                 name='description'
                                                 apiKey='your-api-key'
                                                 onInit={(evt, editor) => editorRef.current = editor}
-                                                initialValue={projectEdit.description}
+                                                initialValue={values.description}
                                                 init={{
                                                     height: 300,
                                                     menubar: false,
@@ -98,7 +96,7 @@ function ModalProjectManager(props) {
                                         </div>
                                         <div className='mt-5 mb-5 '>
                                             <p>Project Category</p>
-                                            <select className='w-100 creat_input' name='categoryId' onChange={handleChange} value={projectEdit.categoryId} >
+                                            <select className='w-100 creat_input' name='categoryId' onChange={handleChange} value={values.categoryId} >
                                                 {renderProJectCatelogry()}
                                             </select>
                                         </div>
@@ -126,7 +124,6 @@ const CreateProjectForm = withFormik({
             id: props.projectEdit.id,
             projectName: props.projectEdit.projectName,
             description: props.projectEdit.description,
-            creator: props.projectEdit.creator,
             categoryId: props.projectEdit.categoryId,
 
         }
@@ -137,16 +134,14 @@ const CreateProjectForm = withFormik({
 
     }),
 
-    handleChange: (e) => {
-        console.log(e)
-    },
 
     handleSubmit: (values, { props, setSubmitting }) => {
-        // props.dispatch({
-        //    type: CREATE_NEWPROJECT_AUTHORIZE,
-        //    newProject:values
-        // })
-        console.log(values)
+        props.dispatch({
+           type: UPDATE_PROJECT,
+           projectID:props.projectEdit.id,
+           projectValue:values
+        })
+        // console.log(values)
     },
 
     displayName: 'BasicForm',
