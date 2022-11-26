@@ -1,12 +1,13 @@
 import Axios from 'axios'
 import { call, delay, fork, take, takeEvery, takeLatest, put, select } from 'redux-saga/effects'
 import { CyberbugService, cyberbugService } from '../../services/CyberbugService'
-import { todoList } from '../../services/ToDoListService'
+
 import { STATUS_CODE, TOKEN, USER_LOG } from '../../util/constants/settingSystem'
-import { ADD_LIST_ALL_PROJECT, CREATE_NEWPROJECT_AUTHORIZE, DEL_PROJECT, GET_ALLPROJECT, GET_LIST_ALL_PROJECT, GET_PROJECT_CATEGORY, SET_PROJECT_CATEGORY, UPDATE_PROJECT, USER_LOGIN_CYBERBUG } from '../constants/CyberBugConst'
+import { ADD_LIST_ALL_PROJECT, ADD_USER_LOG, ASSIGN_USER_PROJECT, CLOSE_FORM, CREATE_NEWPROJECT_AUTHORIZE, DEL_PROJECT, GET_ALLPROJECT, GET_LIST_ALL_PROJECT, GET_PROJECT_CATEGORY, GET_USER, GET_USER_LIST, REMOVE_USER_PROJECT, SET_PROJECT_CATEGORY, UPDATE_PROJECT, USER_LOGIN_CYBERBUG } from '../constants/CyberBugConst'
 import { DISPLAY_LOADING, HIDE_LOADING } from '../constants/LoadingConst'
 import { useSelector, useDispatch } from 'react-redux';
 import HistoryReducer from '../reducers/HistoryReducer'
+import { openNotificationWithIcon } from '../../util/constants/settingNotifycation'
 
 
 // eslint-disable-next-line require-yield
@@ -27,15 +28,18 @@ function* loginCyberBug(action) {
         localStorage.setItem(USER_LOG, JSON.stringify(data.content))
 
         yield put({
-            type: 'ADD_USER_LOG',
+            type: ADD_USER_LOG,
             user: data.content
         })
         const history = yield select(state => state.HistoryReducer.history)
-
-        history.push('/main')
+        history.push('/projectmanagerment')
 
     } catch (err) {
-        console.log('err')
+        console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
     }
 
     yield put({
@@ -79,8 +83,19 @@ function* createProjectAuthorizeSaga(action) {
 
     try {
         let { data, status } = yield call(() => { return cyberbugService.createProjectAuthorize(action.newProject) })
+
+        if (status == STATUS_CODE.SUCCESS) {
+            yield call(() => {
+                openNotificationWithIcon('success', data.message
+                )
+            })
+        }
     } catch (err) {
         console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
     }
 
     yield put({
@@ -103,14 +118,6 @@ function* getAllProjectSaga() {
     try {
         let { data, status } = yield call(cyberbugService.getAllProject)
         if (status == STATUS_CODE.SUCCESS) {
-            // let user = yield select(state => state.InfoUserLogInReducer.useLogin)
-
-
-            // for (let item in data.content){
-            //     if (data.content[item].creator.id == user.id){
-            //         listProject.push(data.content[item])
-            //     }
-            // }
             yield put({
                 type: ADD_LIST_ALL_PROJECT,
                 listProject: data.content
@@ -119,6 +126,10 @@ function* getAllProjectSaga() {
         }
     } catch (err) {
         console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
     }
 
     yield put({
@@ -133,8 +144,6 @@ export function* trackingGetAllProjectSaga() {
 
 function* deleteProject(action) {
 
-    console.log(action.projectID)
-
     yield put({
         type: DISPLAY_LOADING
     })
@@ -147,8 +156,20 @@ function* deleteProject(action) {
                 type: GET_ALLPROJECT
             })
 
+            yield call(() => {
+                openNotificationWithIcon('success', 'Xóa thành công')
+            })
+        } else {
+            yield call(() => {
+                openNotificationWithIcon('error', 'Lỗi xóa không thành công')
+            })
         }
     } catch (err) {
+
+        yield call(() => {
+
+            return openNotificationWithIcon('error', 'Lỗi xóa không thành công')
+        })
         console.log(err)
     }
 
@@ -165,8 +186,7 @@ export function* trackingDeleteProjectSaga() {
 function* updateProject(action) {
 
     let { projectID, projectValue } = action;
-    console.log('id', projectID);
-    console.log('obj', projectValue);
+
 
     yield put({
         type: DISPLAY_LOADING
@@ -181,17 +201,108 @@ function* updateProject(action) {
             yield put({
                 type: GET_ALLPROJECT
             })
+            yield put({
+                type: CLOSE_FORM
+            })
+            yield call(() => {
+                openNotificationWithIcon('success', data.message
+                )
+            })
         }
     } catch (err) {
         console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
     }
 
     yield put({
         type: HIDE_LOADING
     })
 
+
+
 }
 
 export function* trackingUpdateProjectSaga() {
     yield takeLatest(UPDATE_PROJECT, updateProject)
+}
+
+function* getUser(action) {
+    try {
+        let { data, status } = yield call(() => { return cyberbugService.getUser(action.user) })
+        if (status == STATUS_CODE.SUCCESS) {
+            yield put({
+                type: GET_USER_LIST,
+                userList: data.content
+            })
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+}
+
+export function* trackingGetUser() {
+    yield takeLatest(GET_USER, getUser)
+}
+
+
+function* assignUserProjectSaga(action) {
+    console.log(action.user)
+    try {
+        let { data, status } = yield call(() => { return cyberbugService.assignUserProject(action.user) })
+
+        if (status == STATUS_CODE.SUCCESS) {
+            yield put({
+                type: GET_ALLPROJECT
+            })
+            yield call(() => {
+                openNotificationWithIcon('success', data.content
+                )
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
+    }
+
+}
+
+export function* trackingAssignUserProjectSaga() {
+    yield takeLatest(ASSIGN_USER_PROJECT, assignUserProjectSaga)
+}
+
+function* removeUserProjectSaga(action) {
+    console.log(action.user)
+    try {
+        let { data, status } = yield call(() => { return cyberbugService.removeUserProject(action.user) })
+        console.log(data)
+        console.log(status)
+
+        if (status == STATUS_CODE.SUCCESS) {
+            yield put({
+                type: GET_ALLPROJECT
+            })
+            yield call(() => {
+                openNotificationWithIcon('success', data.content
+                )
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        yield call(() => {
+            openNotificationWithIcon('error', err.response.data.message
+            )
+        })
+    }
+
+}
+
+export function* trackingRemoveUserProjectSaga() {
+    yield takeLatest(REMOVE_USER_PROJECT, removeUserProjectSaga)
 }

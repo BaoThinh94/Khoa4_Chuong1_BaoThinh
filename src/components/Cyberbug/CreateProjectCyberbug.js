@@ -78,14 +78,10 @@ function CreateProjectCyberbug(props) {
                     <div className='mt-5 mb-5 '>
                         <p>Project Category</p>
                         <select className='w-100 creat_input' name='categoryId' onChange={handleChange} >
-                            {/* <option>Software</option>
-                            <option>Business</option>
-                            <option>Marketing</option> */}
-
                             {renderProJectCatelogry()}
                         </select>
                     </div>
-                    <button onClick={log} type="submit">Submit</button>
+                    <button className='btn btn-success' onClick={log} type="submit">Submit</button>
                 </form>
             </div>
         </div>
@@ -109,9 +105,10 @@ const CreateProjectForm = withFormik({
     }),
 
     handleSubmit: (values, { props, setSubmitting }) => {
+        console.log(values)
         props.dispatch({
-           type: CREATE_NEWPROJECT_AUTHORIZE,
-           newProject:values
+            type: CREATE_NEWPROJECT_AUTHORIZE,
+            newProject: values
         })
     },
 

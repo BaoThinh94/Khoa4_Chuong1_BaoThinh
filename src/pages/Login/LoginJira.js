@@ -6,6 +6,7 @@ import * as Yup from 'yup'
 import { connect } from 'react-redux';
 import { USER_LOGIN_CYBERBUG } from '../../redux/constants/CyberBugConst';
 import { signInAction } from '../../redux/actions/Cyberbugaction';
+import { NavLink } from 'react-router-dom';
 
 function LoginJira(props) {
 
@@ -17,8 +18,8 @@ function LoginJira(props) {
         handleBlur,
         handleSubmit,
     } = props;
-   
-    
+
+
     return (
         <div className='d-flex justify-content-center align-items-center' style={{ height: window.innerHeight, minWidth: 200 }}>
             <form onSubmit={handleSubmit}
@@ -39,7 +40,8 @@ function LoginJira(props) {
                     {errors.password && touched.password && <div className='text-danger'>{errors.password}</div>}
                 </div>
                 <div className='d-flex justify-content-center mt-5'>
-                    <Button htmlType="submit" type="primary">Login</Button>
+                    <Button htmlType="submit" className='mr-3' type="primary">Login</Button>
+                    <NavLink to='signup' > <Button type="primary">Sign Up</Button></NavLink>
                 </div>
             </form>
         </div>
@@ -56,20 +58,20 @@ const MyEnhancedForm = withFormik({
     validationSchema: Yup.object().shape({ // Validate form field
         email: Yup.string()
             .email('email is not valid')
-            .required('Username is required')
+            .required('email is required')
             .min(5, 'Username must have min 5 characters'),
-            
-        password: Yup.string()
-            .required('Username is required')
-            ,
-            
-    }),
-    handleSubmit: ({email,password}, {props,setSubmitting }) => {
-        
 
-        
+        password: Yup.string()
+            .required('Password is required')
+        ,
+
+    }),
+    handleSubmit: ({ email, password }, { props, setSubmitting }) => {
+
+
+
         setSubmitting(true)
-        props.dispatch(signInAction(email,password));
+        props.dispatch(signInAction(email, password));
     },
 
     displayName: 'BasicForm',

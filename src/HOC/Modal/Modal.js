@@ -1,32 +1,35 @@
-import React from 'react'
-
-import {useSelector,useDispatch} from 'react-redux'
-
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { CLOSE_FORM } from '../../redux/constants/CyberBugConst';
 
 export default function Modal(props) {
 
-    let Component =  useSelector(state => state.ModalReducer.Component);
+    // const [open, setOpen] = useState(false);
 
+    let { setOpen, ComponentContent, title } = useSelector(state => state.ModalReducer)
+    let dispatch = useDispatch()
+
+    const onClose = () => {
+        return dispatch({
+            type: CLOSE_FORM
+        })
+    };
     return (
-        <div className="modal fade" id="modelId" tabIndex={-1} role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">Modal title</h5>
-                        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div className="modal-body">
-                        {Component}
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" className="btn btn-primary">Save</button>
-                    </div>
+        <>
+            <Drawer
+                title={title}
+                width={720}
+                onClose={onClose}
+                open={setOpen}
+                bodyStyle={{
+                    paddingBottom: 80,
+                }}
+            >   <div>
+                    {ComponentContent}
                 </div>
-            </div>
-        </div>
-
-    )
+            </Drawer>
+        </>
+    );
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { GET_ALLPROJECT } from '../../redux/constants/CyberBugConst';
 
 export default function MenuCyberbug() {
@@ -9,7 +9,7 @@ export default function MenuCyberbug() {
         <div className="menu">
             <div className="account">
                 <div className="avatar">
-                    <img src={require("../../assets/img/download.jfif")} alt ='123' />
+                    <img src={require("../../assets/img/download.jfif")} alt='123' />
                 </div>
                 <div className="account-info">
                     <p>CyberLearn.vn</p>
@@ -18,25 +18,31 @@ export default function MenuCyberbug() {
             </div>
             <div className="control">
                 <div>
-                    <NavLink  style = {{color:'rgba(0, 0, 0, 0.85)'}} activeClassName="activeNavlink" activeStyle={{ 
-                        fontWeight: 'bold', 
+                    <NavLink style={{ color: 'rgba(0, 0, 0, 0.85)' }} activeClassName="activeNavlink" activeStyle={{
+                        fontWeight: 'bold',
                         color: 'blue'
-                        }} 
-                        to='/main'>
+                    }}
+                        to='/main/:projectid'>
                         <i className="fa fa-credit-card" />
                         <span> Cyber Board</span>
                     </NavLink>
                 </div>
                 <div>
-                    <NavLink   style = {{color:'rgba(0, 0, 0, 0.85)'}} activeClassName="activeNavlink" activeStyle={{ fontWeight: 'bold', color: 'blue' }} to='/createproject'>
+                    <NavLink style={{ color: 'rgba(0, 0, 0, 0.85)' }} activeClassName="activeNavlink" activeStyle={{ fontWeight: 'bold', color: 'blue' }} to='/createproject'>
                         <i className="fa fa-cog" />
                         <span> Project Settings</span>
                     </NavLink>
                 </div>
                 <div>
-                    <NavLink   style = {{color:'rgba(0, 0, 0, 0.85)'}} activeClassName="activeNavlink" activeStyle={{ fontWeight: 'bold', color: 'blue' }} to='/projectmanagerment'>
+                    <NavLink style={{ color: 'rgba(0, 0, 0, 0.85)' }} activeClassName="activeNavlink" activeStyle={{ fontWeight: 'bold', color: 'blue' }} to='/projectmanagerment'>
                         <i className="fa fa-cog" />
                         <span> Project Managerment</span>
+                    </NavLink>
+                </div>
+                <div>
+                    <NavLink style={{ color: 'rgba(0, 0, 0, 0.85)' }} activeClassName="activeNavlink" activeStyle={{ fontWeight: 'bold', color: 'blue' }} to='/usermanagerment'>
+                        <i className="fa fa-cog" />
+                        <span> User Managerment</span>
                     </NavLink>
                 </div>
             </div>
